@@ -1,73 +1,84 @@
-# React + TypeScript + Vite
+# Boolean Synth ⚡️
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat&logo=vercel)](https://boolean-synth.vercel.app/)
+[**Live Demo →**](https://boolean-synth.vercel.app/)
 
-Currently, two official plugins are available:
+Boolean Synth is a high-performance, interactive tool for designing, simplifying, and visualizing Boolean logic circuits. It bridges the gap between algebraic expressions and physical logic gate diagrams with real-time bidirectional synchronization.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Boolean Synth UI](https://raw.githubusercontent.com/your-username/boolean-synth/main/public/preview.png) *(Note: Placeholder for actual screenshot)*
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Real-time Synthesis**: Instantly convert complex Boolean expressions into clean, auto-layout logic diagrams.
+- **Bidirectional Sync**: Modify the algebraic expression to update the graph, or manipulate the graph to update the expression.
+- **Advanced Parsing**: Supports implicit multiplication (`ab`), common operators (`+`, `'`, `^`), and functions like `NAND(a,b)`.
+- **Expression Simplification**: One-click simplification of Boolean expressions using algebraic reduction.
+- **Interactive Circuit Board**: Powered by React Flow, offering a smooth, zoomable, and draggable interface for exploring logic structures.
+- **Modern Aesthetics**: A premium glassmorphism UI built with Tailwind CSS 4 and Framer Motion, optimized for dark mode.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Framework**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Diagram Engine**: [React Flow](https://reactflow.dev/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Package Manager**: [pnpm](https://pnpm.io/)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Ensure you have [Node.js](https://nodejs.org/) installed and [pnpm](https://pnpm.io/installation) configured.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/boolean-synth.git
+   cd boolean-synth
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+3. Start the development server:
+   ```bash
+   pnpm dev
+   ```
+
+## 📖 Usage & Syntax
+
+| Operation | Syntax | Example |
+| :--- | :--- | :--- |
+| **AND** | `ab` or `a*b` | `abc` |
+| **OR** | `a+b` | `a+b+c` |
+| **NOT** | `a'` | `(a+b)'` |
+| **XOR** | `a^b` | `a^b` |
+| **NAND** | `NAND(a,b)` | `NAND(a, b)` |
+
+### Examples
+
+- **Standard**: `(a+b)c'`
+- **Complex**: `(ab)(a'b+ab')+(ab)'(a'b+ab')'`
+- **Implicit**: `abc + def'`
+
+## 🧬 Logic Module
+
+The core logic is divided into:
+- `parser.ts`: Tokenizes and parses strings into an Abstract Syntax Tree (AST).
+- `simplifier.ts`: Applies Boolean algebra rules to reduce expression complexity.
+- `layout.ts`: Computes node positions and edge connections for the logic gates.
+- `generator.ts`: Reconstructs algebraic expressions from the graph state.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+Built with ❤️ for logic enthusiasts.
