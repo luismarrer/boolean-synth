@@ -10,7 +10,7 @@ interface Token {
 const PRECEDENCE: Record<string, number> = {
   "'": 4, '!': 4, '~': 4,
   '*': 3, '&': 3, 'AND': 3, 'NAND': 3,
-  '+': 2, '|': 2, 'OR': 2, 'NOR': 2, 'XOR': 2, 'XNOR': 2, '^': 2
+  '+': 2, '|': 2, 'OR': 2, 'NOR': 2, 'XOR': 2, 'XNOR': 2, '^': 2, '⊙': 2
 };
 
 const lex = (input: string): Token[] => {
@@ -57,7 +57,7 @@ const lex = (input: string): Token[] => {
           tokens.push({ type: 'VAR', value: varName });
         }
       }
-    } else if (["'", "!", "~", "*", "&", "+", "|", "^"].includes(char)) {
+    } else if (["'", "!", "~", "*", "&", "+", "|", "^", "⊙"].includes(char)) {
       tokens.push({ type: 'OPERATOR', value: char });
       i++;
     } else {
@@ -102,7 +102,7 @@ export const parseExpression = (input: string): ASTNode => {
       case '*': case '&': case 'AND': type = 'AND'; break;
       case '+': case '|': case 'OR': type = 'OR'; break;
       case '^': case 'XOR': type = 'XOR'; break;
-      case 'XNOR': type = 'XNOR'; break;
+      case '⊙': case 'XNOR': type = 'XNOR'; break;
       case 'NAND': type = 'NAND'; break;
       case 'NOR': type = 'NOR'; break;
       default: return;

@@ -66,5 +66,31 @@ export const simplifyAST = (node: ASTNode): ASTNode => {
     if (isNotVar) return { type: 'NOT', children: [{ type: 'VAR', name: v, children: [] }] };
   }
 
+  // Check for XOR/XNOR of 2 variables
+  if (vars.length === 2) {
+    const [a, b] = vars;
+    const xorTable = [false, true, true, false];
+    const xnorTable = [true, false, false, true];
+
+    if (table.every((val, i) => val === xorTable[i])) {
+      return { 
+        type: 'XOR', 
+        children: [
+          { type: 'VAR', name: a, children: [] },
+          { type: 'VAR', name: b, children: [] }
+        ] 
+      };
+    }
+    if (table.every((val, i) => val === xnorTable[i])) {
+      return { 
+        type: 'XNOR', 
+        children: [
+          { type: 'VAR', name: a, children: [] },
+          { type: 'VAR', name: b, children: [] }
+        ] 
+      };
+    }
+  }
+
   return node;
 };

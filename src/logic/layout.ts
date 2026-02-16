@@ -33,6 +33,61 @@ const preprocessASTForDiagram = (node: ASTNode): ASTNode => {
     }
   }
 
+  // Check for XOR patterns: (a'b + ab')
+  if (node.type === 'OR' && processedChildren.length === 2) {
+    const [c1, c2] = processedChildren;
+    if (c1.type === 'AND' && c2.type === 'AND' && c1.children.length === 2 && c2.children.length === 2) {
+      const getVarAndNot = (andNode: ASTNode) => {
+        const varNode = andNode.children.find(c => c.type === 'VAR');
+        const notNode = andNode.children.find(c => c.type === 'NOT' && c.children[0].type === 'VAR');
+        return { varName: varNode?.name, notVarName: notNode?.children[0].name };
+      };
+
+      const set1 = getVarAndNot(c1);
+      const set2 = getVarAndNot(c2);
+
+      // XOR: (a'b + ab') or (ab' + a'b)
+      if (set1.varName && set1.notVarName && set2.varName && set2.notVarName) {
+        if (set1.varName === set2.notVarName && set1.notVarName === set2.varName) {
+          return { 
+            type: 'XOR', 
+            children: [
+              { type: 'VAR', name: set1.varName, children: [] },
+              { type: 'VAR', name: set1.notVarName, children: [] }
+            ] 
+          };
+        }
+      }
+
+      // XNOR: (ab + a'b')
+      const getTwoVars = (andNode: ASTNode) => {
+        const vars = andNode.children.filter(c => c.type === 'VAR').map(v => v.name);
+        return vars.length === 2 ? vars.sort() : null;
+      };
+      const getTwoNots = (andNode: ASTNode) => {
+        const nots = andNode.children.filter(c => c.type === 'NOT' && c.children[0].type === 'VAR').map(v => v.children[0].name);
+        return nots.length === 2 ? nots.sort() : null;
+      };
+
+      const vars1 = getTwoVars(c1);
+      const nots1 = getTwoNots(c1);
+      const vars2 = getTwoVars(c2);
+      const nots2 = getTwoNots(c2);
+
+      if ((vars1 && nots2 && vars1[0] === nots2[0] && vars1[1] === nots2[1]) ||
+          (vars2 && nots1 && vars2[0] === nots1[0] && vars2[1] === nots1[1])) {
+        const finalVars = vars1 || vars2;
+        return {
+          type: 'XNOR',
+          children: [
+            { type: 'VAR', name: finalVars![0], children: [] },
+            { type: 'VAR', name: finalVars![1], children: [] }
+          ]
+        };
+      }
+    }
+  }
+
   return { ...node, children: processedChildren };
 };
 
