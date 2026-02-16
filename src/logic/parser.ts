@@ -32,18 +32,30 @@ const lex = (input: string): Token[] => {
       tokens.push({ type: 'RPAREN', value: ')' });
       i++;
     } else if (/[a-zA-Z]/.test(char)) {
-      let varName = char;
+      let word = char;
       i++;
       while (i < input.length && /[a-zA-Z0-9]/.test(input[i])) {
-        varName += input[i];
+        word += input[i];
         i++;
       }
-      // Check if it's a multi-char operator
-      const upperVar = varName.toUpperCase();
-      if (['AND', 'OR', 'XOR', 'XNOR', 'NAND', 'NOR'].includes(upperVar)) {
-        tokens.push({ type: 'OPERATOR', value: upperVar });
+      
+      const upperWord = word.toUpperCase();
+      if (['AND', 'OR', 'XOR', 'XNOR', 'NAND', 'NOR'].includes(upperWord)) {
+        tokens.push({ type: 'OPERATOR', value: upperWord });
       } else {
-        tokens.push({ type: 'VAR', value: varName });
+        // If it's not an operator, treat each character as a variable
+        // (with common sense: a1 is one variable, but ab is a*b)
+        let j = 0;
+        while (j < word.length) {
+          let varName = word[j];
+          j++;
+          // Handle cases like a1, x12 etc as single variables
+          while (j < word.length && /[0-9]/.test(word[j])) {
+            varName += word[j];
+            j++;
+          }
+          tokens.push({ type: 'VAR', value: varName });
+        }
       }
     } else if (["'", "!", "~", "*", "&", "+", "|", "^"].includes(char)) {
       tokens.push({ type: 'OPERATOR', value: char });
