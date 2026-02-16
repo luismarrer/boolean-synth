@@ -1,4 +1,3 @@
-import React from 'react'
 import { Handle, Position } from 'reactflow'
 import type { LucideIcon } from 'lucide-react'
 import { Trash2 } from 'lucide-react'
@@ -16,10 +15,12 @@ export const GateNode = ({ data }: GateNodeProps) => {
     const Icon = data.icon
 
     return (
-        <div className="px-4 py-2 shadow-lg rounded-md bg-[#1e293b] border-2 border-[#334155] min-w-[100px] group">
-            <div className="flex flex-col items-center">
-                <Icon size={24} color={data.color} className="mb-1" />
-                <div className="text-xs font-bold text-gray-300 uppercase tracking-tight">{data.label}</div>
+        <div className="px-6 py-4 shadow-xl rounded-xl bg-slate-900/90 border border-slate-700/50 backdrop-blur-sm min-w-[120px] group transition-all hover:border-blue-500/50">
+            <div className="flex flex-col items-center gap-2">
+                <div className="p-2 rounded-lg bg-slate-800/50 group-hover:bg-blue-500/10 transition-colors">
+                    <Icon size={40} color={data.color} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
+                </div>
+                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{data.label}</div>
             </div>
 
             {/* Handles */}

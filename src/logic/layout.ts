@@ -1,21 +1,43 @@
 import type { ASTNode } from './ast';
 import type { Node, Edge } from 'reactflow';
 import { 
-  Plus, 
-  CircleDot, 
-  CircleSlash, 
-  SquareAsterisk, 
-  Zap, 
-  ZapOff,
-  CircleHelp
-} from 'lucide-react';
+  AndGate,
+  OrGate,
+  NotGate,
+  XorGate,
+  NandGate,
+  NorGate,
+  XnorGate
+} from '../components/LogicGateSymbols';
 
 const NODE_HEIGHT = 80;
 
 const HORIZONTAL_SPACING = 200;
 const VERTICAL_SPACING = 100;
 
+const preprocessASTForDiagram = (node: ASTNode): ASTNode => {
+  // Recursively process children first
+  const processedChildren = node.children.map(preprocessASTForDiagram);
+
+  // Check for NOT(GATE) patterns
+  if (node.type === 'NOT' && processedChildren.length === 1) {
+    const child = processedChildren[0];
+    if (child.type === 'AND') {
+      return { type: 'NAND', children: child.children };
+    }
+    if (child.type === 'OR') {
+      return { type: 'NOR', children: child.children };
+    }
+    if (child.type === 'XOR') {
+      return { type: 'XNOR', children: child.children };
+    }
+  }
+
+  return { ...node, children: processedChildren };
+};
+
 export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
+  const simplifiedAST = preprocessASTForDiagram(ast);
   const nodes: Node[] = [];
   const edges: Edge[] = [];
   let idCounter = 0;
@@ -28,7 +50,7 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
     }
     node.children.forEach(collectVars);
   };
-  collectVars(ast);
+  collectVars(simplifiedAST);
 
   // 2. Map variables to node IDs and create them
   const varNodes = Array.from(variables).sort();
@@ -55,13 +77,13 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
     const data: any = { label: node.type };
     
     switch (node.type) {
-      case 'AND': data.icon = SquareAsterisk; data.color = '#3b82f6'; break;
-      case 'OR': data.icon = Plus; data.color = '#10b981'; break;
-      case 'NOT': data.icon = CircleSlash; data.color = '#ef4444'; break;
-      case 'XOR': data.icon = Zap; data.color = '#f59e0b'; break;
-      case 'XNOR': data.icon = ZapOff; data.color = '#8b5cf6'; break;
-      case 'NAND': data.icon = CircleDot; data.color = '#06b6d4'; break;
-      case 'NOR': data.icon = CircleHelp; data.color = '#ec4899'; break;
+      case 'AND': data.icon = AndGate; data.color = '#3b82f6'; break;
+      case 'OR': data.icon = OrGate; data.color = '#10b981'; break;
+      case 'NOT': data.icon = NotGate; data.color = '#ef4444'; break;
+      case 'XOR': data.icon = XorGate; data.color = '#f59e0b'; break;
+      case 'XNOR': data.icon = XnorGate; data.color = '#8b5cf6'; break;
+      case 'NAND': data.icon = NandGate; data.color = '#06b6d4'; break;
+      case 'NOR': data.icon = NorGate; data.color = '#ec4899'; break;
     }
 
     let childY = y;
@@ -99,10 +121,10 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
     if (node.children.length === 0) return 1;
     return 1 + Math.max(...node.children.map(getDepth));
   };
-  const depth = getDepth(ast);
+  const depth = getDepth(simplifiedAST);
   const startX = depth * HORIZONTAL_SPACING;
 
-  const root = traverse(ast, startX, 100);
+  const root = traverse(simplifiedAST, startX, 100);
   
   // Add Output node
   const outputId = 'output-node';
