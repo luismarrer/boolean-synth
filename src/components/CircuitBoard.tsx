@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import { useCallback } from 'react'
 import ReactFlow, {
     Background,
     Controls,
@@ -9,19 +9,14 @@ import ReactFlow, {
     ReactFlowProvider
 } from 'reactflow'
 import type {
-    NodeChange,
-    EdgeChange,
-    Connection,
-    Node,
-    Edge,
     OnNodesChange,
     OnEdgesChange,
     OnConnect,
+    Node as RFNode,
+    Edge as RFEdge,
 } from 'reactflow'
 import 'reactflow/dist/style.css'
 import { GateNode, InputNode, OutputNode } from './Nodes'
-import { graphToAST } from '../logic/generator'
-import { stringifyAST } from '../logic/ast'
 
 const nodeTypes = {
     gateNode: GateNode,
@@ -30,24 +25,26 @@ const nodeTypes = {
 }
 
 interface CircuitBoardProps {
-    nodes: Node[]
-    edges: Edge[]
-    onGraphChange: (nodes: Node[], edges: Edge[]) => void
+    nodes: RFNode[]
+    edges: RFEdge[]
+    onGraphChange: (nodes: RFNode[], edges: RFEdge[], isStructural: boolean) => void
 }
 
 const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) => {
     const onNodesChange: OnNodesChange = useCallback(
         (changes) => {
+            const isStructural = changes.some(c => c.type === 'remove' || c.type === 'reset')
             const newNodes = applyNodeChanges(changes, nodes)
-            onGraphChange(newNodes, edges)
+            onGraphChange(newNodes, edges, isStructural)
         },
         [nodes, edges, onGraphChange]
     )
 
     const onEdgesChange: OnEdgesChange = useCallback(
         (changes) => {
+            const isStructural = changes.some(c => c.type === 'remove' || c.type === 'reset')
             const newEdges = applyEdgeChanges(changes, edges)
-            onGraphChange(nodes, newEdges)
+            onGraphChange(nodes, newEdges, isStructural)
         },
         [nodes, edges, onGraphChange]
     )
@@ -55,7 +52,7 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
     const onConnect: OnConnect = useCallback(
         (connection) => {
             const newEdges = addEdge({ ...connection, animated: true, style: { stroke: '#94a3b8' } }, edges)
-            onGraphChange(nodes, newEdges)
+            onGraphChange(nodes, newEdges, true)
         },
         [nodes, edges, onGraphChange]
     )

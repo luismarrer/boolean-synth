@@ -1,24 +1,36 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { parseExpression } from './logic/parser'
 import { astToGraph } from './logic/layout'
 import { graphToAST } from './logic/generator'
 import { stringifyAST } from './logic/ast'
 import { CircuitBoard } from './components/CircuitBoard'
-import type { Node, Edge } from 'reactflow'
+import type { Node as RFNode, Edge as RFEdge } from 'reactflow'
 import { Cpu, RotateCcw, Share2, Info } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
+import { simplifyAST } from './logic/simplifier'
+
 function App() {
   const [expression, setExpression] = useState("(ab)(a'b+ab')+(ab)'(a'b+ab')'")
-  const [nodes, setNodes] = useState<Node[]>([])
-  const [edges, setEdges] = useState<Edge[]>([])
+  const [nodes, setNodes] = useState<RFNode[]>([])
+  const [edges, setEdges] = useState<RFEdge[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [isSyncingFromExpr, setIsSyncingFromExpr] = useState(false)
+  const isSyncingRef = useRef(false)
+
+  const handleSimplify = () => {
+    try {
+      const ast = parseExpression(expression)
+      const simplified = simplifyAST(ast)
+      setExpression(stringifyAST(simplified))
+    } catch (e: any) {
+      setError(e.message)
+    }
+  }
 
   // Sync Expression -> Graph
   useEffect(() => {
     try {
-      if (isSyncingFromExpr) return
+      if (isSyncingRef.current) return
       const ast = parseExpression(expression)
       const { nodes: newNodes, edges: newEdges } = astToGraph(ast)
       setNodes(newNodes)
@@ -27,21 +39,26 @@ function App() {
     } catch (e: any) {
       setError(e.message)
     }
-  }, [expression, isSyncingFromExpr])
+  }, [expression])
 
-  const handleGraphChange = useCallback((newNodes: Node[], newEdges: Edge[]) => {
+  const handleGraphChange = useCallback((newNodes: RFNode[], newEdges: RFEdge[], isStructural = false) => {
     setNodes(newNodes)
     setEdges(newEdges)
+
+    if (!isStructural) return
 
     // Try to sync Graph -> Expression
     try {
       const ast = graphToAST(newNodes, newEdges)
       const newExpr = stringifyAST(ast)
-      setIsSyncingFromExpr(true)
+
+      isSyncingRef.current = true
       setExpression(newExpr)
       setError(null)
       // Release sync lock after a delay to avoid feedback loops
-      setTimeout(() => setIsSyncingFromExpr(false), 100)
+      setTimeout(() => {
+        isSyncingRef.current = false
+      }, 100)
     } catch (e: any) {
       // It's okay if drawing is incomplete
     }
@@ -92,12 +109,21 @@ function App() {
               <Info size={16} />
               Boolean Expression
             </h2>
-            <textarea
-              value={expression}
-              onChange={(e) => setExpression(e.target.value)}
-              className="w-full h-32 bg-slate-900/50 border border-slate-800 rounded-xl p-4 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
-              placeholder="e.g. (a+b)c'"
-            />
+            <div className="relative">
+              <textarea
+                value={expression}
+                onChange={(e) => setExpression(e.target.value)}
+                className="w-full h-32 bg-slate-900/50 border border-slate-800 rounded-xl p-4 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                placeholder="e.g. (a+b)c'"
+              />
+              <button
+                onClick={handleSimplify}
+                className="absolute bottom-3 right-3 px-3 py-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 text-xs font-semibold rounded-md border border-blue-500/30 transition-all"
+                title="Simplify Expression"
+              >
+                Simplify
+              </button>
+            </div>
             <AnimatePresence>
               {error && (
                 <motion.div

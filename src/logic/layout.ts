@@ -7,12 +7,11 @@ import {
   SquareAsterisk, 
   Zap, 
   ZapOff,
-  CircleHelp,
-  Type
+  CircleHelp
 } from 'lucide-react';
 
-const NODE_WIDTH = 150;
 const NODE_HEIGHT = 80;
+
 const HORIZONTAL_SPACING = 200;
 const VERTICAL_SPACING = 100;
 
@@ -21,12 +20,39 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
   const edges: Edge[] = [];
   let idCounter = 0;
 
-  const traverse = (node: ASTNode, x: number, y: number, parentId?: string): { id: string; height: number } => {
-    const currentId = `node-${idCounter++}`;
-    let height = 0;
+  // 1. Find all unique variables
+  const variables = new Set<string>();
+  const collectVars = (node: ASTNode) => {
+    if (node.type === 'VAR' && node.name) {
+      variables.add(node.name);
+    }
+    node.children.forEach(collectVars);
+  };
+  collectVars(ast);
 
+  // 2. Map variables to node IDs and create them
+  const varNodes = Array.from(variables).sort();
+  const varMap: Record<string, string> = {};
+  
+  varNodes.forEach((varName, index) => {
+    const id = `input-${varName}`;
+    varMap[varName] = id;
+    nodes.push({
+      id,
+      type: 'inputNode',
+      position: { x: 0, y: index * (NODE_HEIGHT + VERTICAL_SPACING) },
+      data: { label: varName }
+    });
+  });
+
+  const traverse = (node: ASTNode, x: number, y: number): { id: string; height: number } => {
+    if (node.type === 'VAR' && node.name) {
+      const id = varMap[node.name];
+      return { id, height: NODE_HEIGHT };
+    }
+
+    const currentId = `node-${idCounter++}`;
     const data: any = { label: node.type };
-    let type = 'gate';
     
     switch (node.type) {
       case 'AND': data.icon = SquareAsterisk; data.color = '#3b82f6'; break;
@@ -36,29 +62,16 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
       case 'XNOR': data.icon = ZapOff; data.color = '#8b5cf6'; break;
       case 'NAND': data.icon = CircleDot; data.color = '#06b6d4'; break;
       case 'NOR': data.icon = CircleHelp; data.color = '#ec4899'; break;
-      case 'VAR':
-        type = 'input';
-        data.label = node.name;
-        break;
-    }
-
-    if (node.type === 'VAR') {
-      nodes.push({
-        id: currentId,
-        type: 'inputNode',
-        position: { x, y },
-        data: { label: node.name }
-      });
-      return { id: currentId, height: NODE_HEIGHT };
     }
 
     let childY = y;
     let totalChildrenHeight = 0;
     
     node.children.forEach((child, index) => {
-      const childResult = traverse(child, x - HORIZONTAL_SPACING, childY, currentId);
+      // Find the depth to decide X of gates
+      const childResult = traverse(child, x - HORIZONTAL_SPACING, childY);
       edges.push({
-        id: `edge-${currentId}-${childResult.id}`,
+        id: `edge-${currentId}-${childResult.id}-${index}`,
         source: childResult.id,
         target: currentId,
         animated: true,
@@ -80,14 +93,23 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
     return { id: currentId, height: Math.max(NODE_HEIGHT, totalChildrenHeight) };
   };
 
-  const root = traverse(ast, 800, 300);
+  // Calculate necessary horizontal space based on AST depth
+  const getDepth = (node: ASTNode): number => {
+    if (node.type === 'VAR') return 1;
+    if (node.children.length === 0) return 1;
+    return 1 + Math.max(...node.children.map(getDepth));
+  };
+  const depth = getDepth(ast);
+  const startX = depth * HORIZONTAL_SPACING;
+
+  const root = traverse(ast, startX, 100);
   
   // Add Output node
   const outputId = 'output-node';
   nodes.push({
     id: outputId,
     type: 'outputNode',
-    position: { x: 800 + HORIZONTAL_SPACING, y: 300 },
+    position: { x: startX + HORIZONTAL_SPACING, y: nodes.find(n => n.id === root.id)?.position.y || 100 },
     data: { label: 'OUT' }
   });
   
