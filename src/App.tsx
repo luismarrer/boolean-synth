@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { parseExpression } from './logic/parser'
 import { astToGraph } from './logic/layout'
-import { graphToAST } from './logic/generator'
+import { graphToAST, buildNodeAST } from './logic/generator'
 import { stringifyAST } from './logic/ast'
 import { CircuitBoard } from './components/CircuitBoard'
 import { ComponentLibrary } from './components/ComponentLibrary'
@@ -44,14 +44,31 @@ function App() {
   }, [expression])
 
   const handleGraphChange = useCallback((newNodes: RFNode[], newEdges: RFEdge[], isStructural = false) => {
+    // Calculate expressions for each edge
+    const updatedEdges = newEdges.map(edge => {
+      try {
+        const sourceAST = buildNodeAST(edge.source, newNodes, newEdges)
+        const expression = stringifyAST(sourceAST, { expanded: useExpandedNotation })
+        return {
+          ...edge,
+          data: {
+            ...edge.data,
+            expression
+          }
+        }
+      } catch (e) {
+        return edge
+      }
+    })
+
     setNodes(newNodes)
-    setEdges(newEdges)
+    setEdges(updatedEdges)
 
     if (!isStructural) return
 
     // Try to sync Graph -> Expression
     try {
-      const ast = graphToAST(newNodes, newEdges)
+      const ast = graphToAST(newNodes, updatedEdges)
       const newExpr = stringifyAST(ast, { expanded: useExpandedNotation })
 
       isSyncingRef.current = true
@@ -64,12 +81,30 @@ function App() {
     } catch (e: any) {
       // It's okay if drawing is incomplete
     }
-  }, [])
+  }, [useExpandedNotation])
 
   // Sync Toggle -> Expression
   useEffect(() => {
     try {
-      const ast = graphToAST(nodes, edges)
+      // Update edge expressions when notation changes
+      const updatedEdges = edges.map(edge => {
+        try {
+          const sourceAST = buildNodeAST(edge.source, nodes, edges)
+          const expression = stringifyAST(sourceAST, { expanded: useExpandedNotation })
+          return {
+            ...edge,
+            data: {
+              ...edge.data,
+              expression
+            }
+          }
+        } catch (e) {
+          return edge
+        }
+      })
+      setEdges(updatedEdges)
+
+      const ast = graphToAST(nodes, updatedEdges)
       const newExpr = stringifyAST(ast, { expanded: useExpandedNotation })
       isSyncingRef.current = true
       setExpression(newExpr)

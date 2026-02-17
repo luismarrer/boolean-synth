@@ -73,13 +73,13 @@ export const stringifyAST = (node: ASTNode, options: StringifyOptions = {}): str
           const content = n.children.map(c => format({ type: 'NOT', children: [c] }, 1)).join('+');
           return wrap(content, parentPrecedence > 1);
         }
-        return wrap(n.children.map(c => format(c, 2)).join(''), false) + "'";
+        return wrap(n.children.map(c => format(c, 2)).join(''), true) + "'";
       case 'NOR':
         if (expanded) {
           const content = n.children.map(c => format({ type: 'NOT', children: [c] }, 2)).join('');
           return wrap(content, parentPrecedence > 2);
         }
-        return wrap(n.children.map(c => format(c, 1)).join('+'), false) + "'";
+        return wrap(n.children.map(c => format(c, 1)).join('+'), true) + "'";
       default:
         return '';
     }
