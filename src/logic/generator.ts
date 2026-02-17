@@ -19,11 +19,26 @@ export const graphToAST = (nodes: Node[], edges: Edge[]): ASTNode => {
 
     let type: NodeType = node.data.label as NodeType;
     
+    // Validate children counts for certain gates
+    if (type === 'NOT' && children.length !== 1) {
+        // Return a partial AST or throw to avoid broken expressions
+        throw new Error("NOT gate must have exactly one input");
+    }
+    if (['AND', 'OR', 'XOR', 'NAND', 'NOR', 'XNOR'].includes(type) && children.length < 2) {
+        // Instead of throwing, we can return the children directly if only one, 
+        // or just let it be if we want the expression to update as they build it.
+        // But for NAND/NOR it's better to have at least two.
+    }
+    
     return { type, children };
   };
 
   const rootEdge = edges.find(e => e.target === outputNode.id);
-  if (!rootEdge) throw new Error("Output node not connected");
+  if (!rootEdge) return { type: 'VAR', name: '?', children: [] }; // Return placeholder if not connected
 
-  return buildAST(rootEdge.source);
+  try {
+    return buildAST(rootEdge.source);
+  } catch (e) {
+    return { type: 'VAR', name: '...', children: [] };
+  }
 };

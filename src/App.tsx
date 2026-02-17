@@ -4,6 +4,7 @@ import { astToGraph } from './logic/layout'
 import { graphToAST } from './logic/generator'
 import { stringifyAST } from './logic/ast'
 import { CircuitBoard } from './components/CircuitBoard'
+import { ComponentLibrary } from './components/ComponentLibrary'
 import type { Node as RFNode, Edge as RFEdge } from 'reactflow'
 import { Cpu, RotateCcw, Share2, Info } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -167,6 +168,10 @@ function App() {
             <p className="mt-8 text-xs text-slate-500 italic">
               * Support for multiple variables, parentheses, and implicit multiplication.
             </p>
+          </section>
+
+          <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
+            <ComponentLibrary />
           </section>
         </div>
 
