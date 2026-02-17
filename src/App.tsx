@@ -16,13 +16,14 @@ function App() {
   const [nodes, setNodes] = useState<RFNode[]>([])
   const [edges, setEdges] = useState<RFEdge[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [useExpandedNotation, setUseExpandedNotation] = useState(false)
   const isSyncingRef = useRef(false)
 
   const handleSimplify = () => {
     try {
       const ast = parseExpression(expression)
       const simplified = simplifyAST(ast)
-      setExpression(stringifyAST(simplified))
+      setExpression(stringifyAST(simplified, { expanded: useExpandedNotation }))
     } catch (e: any) {
       setError(e.message)
     }
@@ -51,7 +52,7 @@ function App() {
     // Try to sync Graph -> Expression
     try {
       const ast = graphToAST(newNodes, newEdges)
-      const newExpr = stringifyAST(ast)
+      const newExpr = stringifyAST(ast, { expanded: useExpandedNotation })
 
       isSyncingRef.current = true
       setExpression(newExpr)
@@ -64,6 +65,21 @@ function App() {
       // It's okay if drawing is incomplete
     }
   }, [])
+
+  // Sync Toggle -> Expression
+  useEffect(() => {
+    try {
+      const ast = graphToAST(nodes, edges)
+      const newExpr = stringifyAST(ast, { expanded: useExpandedNotation })
+      isSyncingRef.current = true
+      setExpression(newExpr)
+      setTimeout(() => {
+        isSyncingRef.current = false
+      }, 100)
+    } catch (e) {
+      // Ignore if graph is in invalid state
+    }
+  }, [useExpandedNotation])
 
   const handleReset = () => {
     setExpression("a+b")
@@ -110,6 +126,17 @@ function App() {
               <Info size={16} />
               Boolean Expression
             </h2>
+            <div className="flex items-center gap-2 mb-4">
+              <label className="text-xs text-slate-500 font-medium flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={useExpandedNotation}
+                  onChange={(e) => setUseExpandedNotation(e.target.checked)}
+                  className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500/50"
+                />
+                Expanded Notation (e.g. ab + a'b')
+              </label>
+            </div>
             <div className="relative">
               <textarea
                 value={expression}
