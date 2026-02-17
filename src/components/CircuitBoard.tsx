@@ -28,10 +28,16 @@ import {
     XnorGate
 } from './LogicGateSymbols'
 
+import DeletableEdge from './DeletableEdge'
+
 const nodeTypes = {
     gateNode: GateNode,
     inputNode: InputNode,
     outputNode: OutputNode,
+}
+
+const edgeTypes = {
+    deletableEdge: DeletableEdge,
 }
 
 const getSymbolIcon = (type: string) => {
@@ -76,6 +82,11 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
         onGraphChange(newNodes, newEdges, true)
     }, [nodes, edges, onGraphChange])
 
+    const handleDeleteEdge = useCallback((id: string) => {
+        const newEdges = edges.filter(e => e.id !== id)
+        onGraphChange(nodes, newEdges, true)
+    }, [nodes, edges, onGraphChange])
+
     const handleLabelChange = useCallback((id: string, label: string) => {
         const newNodes = nodes.map(n => {
             if (n.id === id) {
@@ -93,6 +104,15 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
             ...node.data,
             onDelete: handleDelete,
             onLabelChange: handleLabelChange
+        }
+    }))
+
+    const edgesWithCallbacks = edges.map(edge => ({
+        ...edge,
+        type: 'deletableEdge',
+        data: {
+            ...edge.data,
+            onDelete: handleDeleteEdge
         }
     }))
 
@@ -116,7 +136,12 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
 
     const onConnect: OnConnect = useCallback(
         (connection) => {
-            const newEdges = addEdge({ ...connection, animated: true, style: { stroke: '#94a3b8' } }, edges)
+            const newEdges = addEdge({
+                ...connection,
+                type: 'deletableEdge',
+                animated: true,
+                style: { stroke: '#94a3b8' }
+            }, edges)
             onGraphChange(nodes, newEdges, true)
         },
         [nodes, edges, onGraphChange]
@@ -168,13 +193,14 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
         >
             <ReactFlow
                 nodes={nodesWithCallbacks}
-                edges={edges}
+                edges={edgesWithCallbacks}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onConnect={onConnect}
                 onDragOver={onDragOver}
                 onDrop={onDrop}
                 nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
                 fitView
             >
                 <Background color="#1e293b" gap={20} />

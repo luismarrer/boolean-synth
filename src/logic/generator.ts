@@ -10,7 +10,7 @@ export const graphToAST = (nodes: Node[], edges: Edge[]): ASTNode => {
     if (!node) throw new Error(`Node ${nodeId} not found`);
 
     if (node.type === 'inputNode') {
-      return { type: 'VAR', name: node.data.label, children: [] };
+      return { type: 'VAR', name: node.data.label.toLowerCase(), children: [] };
     }
 
     // Find children (nodes that point to this node)

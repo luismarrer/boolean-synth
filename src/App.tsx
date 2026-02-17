@@ -140,6 +140,10 @@ function App() {
           </section>
 
           <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
+            <ComponentLibrary />
+          </section>
+
+          <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
             <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
               Cheat Sheet
             </h2>
@@ -162,16 +166,16 @@ function App() {
               </div>
               <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
                 <span className="text-slate-500">NAND</span>
-                <code className="bg-slate-800 px-2 py-1 rounded text-cyan-400">NAND(a,b)</code>
+                <code className="bg-slate-800 px-2 py-1 rounded text-cyan-400">(ab)'</code>
+              </div>
+              <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
+                <span className="text-slate-500">NOR</span>
+                <code className="bg-slate-800 px-2 py-1 rounded text-pink-400">(a+b)'</code>
               </div>
             </div>
             <p className="mt-8 text-xs text-slate-500 italic">
               * Support for multiple variables, parentheses, and implicit multiplication.
             </p>
-          </section>
-
-          <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
-            <ComponentLibrary />
           </section>
         </div>
 

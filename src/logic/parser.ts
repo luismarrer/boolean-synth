@@ -54,7 +54,7 @@ const lex = (input: string): Token[] => {
             varName += word[j];
             j++;
           }
-          tokens.push({ type: 'VAR', value: varName });
+          tokens.push({ type: 'VAR', value: varName.toLowerCase() });
         }
       }
     } else if (char === ',') {

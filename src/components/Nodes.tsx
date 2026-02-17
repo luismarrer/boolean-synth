@@ -53,8 +53,8 @@ export const InputNode = ({ id, data }: { id: string, data: { label: string, onD
         <input
             type="text"
             value={data.label}
-            onChange={(e) => data.onLabelChange?.(id, e.target.value.toUpperCase())}
-            className="bg-transparent text-center font-bold text-white uppercase text-sm w-full focus:outline-none"
+            onChange={(e) => data.onLabelChange?.(id, e.target.value.toLowerCase())}
+            className="bg-transparent text-center font-bold text-white lowercase text-sm w-full focus:outline-none"
         />
         <Handle
             type="source"
@@ -74,7 +74,7 @@ export const InputNode = ({ id, data }: { id: string, data: { label: string, onD
 
 export const OutputNode = ({ id, data }: { id: string, data: { label: string, onDelete?: (id: string) => void } }) => (
     <div className="px-4 py-2 shadow-lg rounded-full bg-[#10b981] border-2 border-[#047857] min-w-[80px] group relative">
-        <div className="text-center font-bold text-white uppercase text-sm">{data.label}</div>
+        <div className="text-center font-bold text-white lowercase text-sm">{data.label}</div>
         <Handle
             type="target"
             position={Position.Left}

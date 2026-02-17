@@ -21,11 +21,9 @@ export const stringifyAST = (node: ASTNode): string => {
     case 'XNOR':
       return `(${node.children.map(stringifyAST).join('⊙')})`;
     case 'NAND':
-      return `NAND(${node.children.map(stringifyAST).join(',')})`;
+      return `(${node.children.map(stringifyAST).join('')})'`;
     case 'NOR':
-      return `NOR(${node.children.map(stringifyAST).join(',')})`;
-    case 'XNOR':
-      return `(${node.children.map(stringifyAST).join('⊙')})`;
+      return `(${node.children.map(stringifyAST).join('+')})'`;
     default:
       return '';
   }
