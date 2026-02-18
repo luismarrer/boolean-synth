@@ -1,37 +1,76 @@
 import type { ASTNode } from './ast';
+import { getVariables, evaluateAST } from './ast';
 
 /**
  * Basic boolean simplifier using truth tables for a small number of variables.
  * It will try to find a simpler expression for the given AST.
  */
 
-const getVariables = (node: ASTNode): string[] => {
-  const vars = new Set<string>();
-  const collect = (n: ASTNode) => {
-    if (n.type === 'VAR' && n.name) vars.add(n.name);
-    n.children.forEach(collect);
-  };
-  collect(node);
-  return Array.from(vars).sort();
-};
+const isNot = (node: ASTNode): boolean => node.type === 'NOT';
+const getNotChild = (node: ASTNode): ASTNode => node.children[0];
 
-const evaluate = (node: ASTNode, values: Record<string, boolean>): boolean => {
-  switch (node.type) {
-    case 'VAR': return !!values[node.name!];
-    case 'NOT': return !evaluate(node.children[0], values);
-    case 'AND': return node.children.every(c => evaluate(c, values));
-    case 'OR': return node.children.some(c => evaluate(c, values));
-    case 'XOR': return node.children.reduce((acc, c) => acc !== evaluate(c, values), false);
-    case 'XNOR': return !node.children.reduce((acc, c) => acc !== evaluate(c, values), false);
-    case 'NAND': return !node.children.every(c => evaluate(c, values));
-    case 'NOR': return !node.children.some(c => evaluate(c, values));
-    default: return false;
+/**
+ * Performs structural simplifications:
+ * - Double negation: (x')' -> x
+ * - De Morgan: (a'b')' -> a+b
+ * - De Morgan: (a'+b')' -> ab
+ */
+const simplifyStructural = (node: ASTNode): ASTNode => {
+  // Recursively simplify children first
+  const children = node.children.map(simplifyStructural);
+  const newNode: ASTNode = { ...node, children };
+
+  // Double negation elimination: (x')' -> x
+  if (newNode.type === 'NOT' && isNot(newNode.children[0])) {
+    return newNode.children[0].children[0];
   }
+
+  // De Morgan Law: (a'b'c')' -> a+b+c
+  if (newNode.type === 'NOT' && newNode.children[0].type === 'AND') {
+    const andNode = newNode.children[0];
+    if (andNode.children.every(isNot)) {
+      return {
+        type: 'OR',
+        children: andNode.children.map(getNotChild)
+      };
+    }
+  }
+
+  // De Morgan Law: (a'+b'+c')' -> ab...
+  if (newNode.type === 'NOT' && newNode.children[0].type === 'OR') {
+    const orNode = newNode.children[0];
+    if (orNode.children.every(isNot)) {
+      return {
+        type: 'AND',
+        children: orNode.children.map(getNotChild)
+      };
+    }
+  }
+
+  // NAND/NOR patterns: (a'b'c') NAND -> a+b+c
+  if (newNode.type === 'NAND' && newNode.children.every(isNot)) {
+    return {
+      type: 'OR',
+      children: newNode.children.map(getNotChild)
+    };
+  }
+
+  if (newNode.type === 'NOR' && newNode.children.every(isNot)) {
+    return {
+      type: 'AND',
+      children: newNode.children.map(getNotChild)
+    };
+  }
+
+  return newNode;
 };
 
 export const simplifyAST = (node: ASTNode): ASTNode => {
-  const vars = getVariables(node);
-  if (vars.length > 8) return node; // Too many variables for truth table
+  // Apply structural simplification first
+  const structuralNode = simplifyStructural(node);
+  
+  const vars = getVariables(structuralNode);
+  if (vars.length > 8) return structuralNode; // Too many variables for truth table
 
   const table: boolean[] = [];
   const numRows = 1 << vars.length;
@@ -41,7 +80,7 @@ export const simplifyAST = (node: ASTNode): ASTNode => {
     vars.forEach((v, idx) => {
       values[v] = !!(i & (1 << (vars.length - 1 - idx)));
     });
-    table.push(evaluate(node, values));
+    table.push(evaluateAST(node, values));
   }
 
   // Check for constants
@@ -92,5 +131,5 @@ export const simplifyAST = (node: ASTNode): ASTNode => {
     }
   }
 
-  return node;
+  return structuralNode;
 };

@@ -1,5 +1,6 @@
 import type { Node, Edge } from 'reactflow';
 import type { ASTNode, NodeType } from './ast';
+import { simplifyAST } from './simplifier';
 
 export const buildNodeAST = (nodeId: string, nodes: Node[], edges: Edge[]): ASTNode => {
   const node = nodes.find(n => n.id === nodeId);
@@ -31,7 +32,8 @@ export const graphToAST = (nodes: Node[], edges: Edge[]): ASTNode => {
   if (!rootEdge) return { type: 'VAR', name: '?', children: [] }; // Return placeholder if not connected
 
   try {
-    return buildNodeAST(rootEdge.source, nodes, edges);
+    const rawAST = buildNodeAST(rootEdge.source, nodes, edges);
+    return simplifyAST(rawAST);
   } catch (e) {
     return { type: 'VAR', name: '...', children: [] };
   }

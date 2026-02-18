@@ -10,6 +10,33 @@ export interface StringifyOptions {
   expanded?: boolean;
 }
 
+export const getVariables = (node: ASTNode): string[] => {
+  const vars = new Set<string>();
+  const collect = (n: ASTNode) => {
+    if (n.type === 'VAR' && n.name && !['0', '1'].includes(n.name)) vars.add(n.name);
+    n.children.forEach(collect);
+  };
+  collect(node);
+  return Array.from(vars).sort();
+};
+
+export const evaluateAST = (node: ASTNode, values: Record<string, boolean>): boolean => {
+  switch (node.type) {
+    case 'VAR':
+      if (node.name === '1') return true;
+      if (node.name === '0') return false;
+      return !!values[node.name!];
+    case 'NOT': return !evaluateAST(node.children[0], values);
+    case 'AND': return node.children.every(c => evaluateAST(c, values));
+    case 'OR': return node.children.some(c => evaluateAST(c, values));
+    case 'XOR': return node.children.reduce((acc, c) => acc !== evaluateAST(c, values), false);
+    case 'XNOR': return !node.children.reduce((acc, c) => acc !== evaluateAST(c, values), false);
+    case 'NAND': return !node.children.every(c => evaluateAST(c, values));
+    case 'NOR': return !node.children.some(c => evaluateAST(c, values));
+    default: return false;
+  }
+};
+
 export const stringifyAST = (node: ASTNode, options: StringifyOptions = {}): string => {
   const { expanded } = options;
 
@@ -86,4 +113,28 @@ export const stringifyAST = (node: ASTNode, options: StringifyOptions = {}): str
   };
 
   return format(node);
+};
+
+export interface TruthTableRow {
+  values: Record<string, boolean>;
+  result: boolean;
+}
+
+export const generateTruthTable = (node: ASTNode): { variables: string[], rows: TruthTableRow[] } => {
+  const variables = getVariables(node);
+  const rows: TruthTableRow[] = [];
+  const numRows = 1 << variables.length;
+
+  for (let i = 0; i < numRows; i++) {
+    const values: Record<string, boolean> = {};
+    variables.forEach((v, idx) => {
+      values[v] = !!(i & (1 << (variables.length - 1 - idx)));
+    });
+    rows.push({
+      values,
+      result: evaluateAST(node, values)
+    });
+  }
+
+  return { variables, rows };
 };
