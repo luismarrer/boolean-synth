@@ -207,6 +207,34 @@ function App() {
           </section>
 
           <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
+            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+              <Cpu size={16} />
+              Truth Tables
+            </h2>
+
+            {(() => {
+              try {
+                const ast = parseExpression(expression)
+                const simplified = simplifyAST(ast)
+                const originalStr = stringifyAST(ast)
+                const simplifiedStr = stringifyAST(simplified)
+                const isDifferent = originalStr !== simplifiedStr
+
+                return (
+                  <div className="space-y-6">
+                    <TruthTable ast={ast} title={isDifferent ? "Original" : "Truth Table"} />
+                    {isDifferent && (
+                      <TruthTable ast={simplified} title="Simplified" />
+                    )}
+                  </div>
+                )
+              } catch (e) {
+                return <p className="text-xs text-slate-500 italic">Enter a valid expression to see the truth table.</p>
+              }
+            })()}
+          </section>
+
+          <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
             <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
               Cheat Sheet
             </h2>
@@ -239,34 +267,6 @@ function App() {
             <p className="mt-8 text-xs text-slate-500 italic">
               * Support for multiple variables, parentheses, and implicit multiplication.
             </p>
-          </section>
-
-          <section className="glass p-6 rounded-2xl space-y-6">
-            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-              <Cpu size={16} />
-              Truth Tables
-            </h2>
-
-            {(() => {
-              try {
-                const ast = parseExpression(expression)
-                const simplified = simplifyAST(ast)
-                const originalStr = stringifyAST(ast)
-                const simplifiedStr = stringifyAST(simplified)
-                const isDifferent = originalStr !== simplifiedStr
-
-                return (
-                  <div className="space-y-6">
-                    <TruthTable ast={ast} title={isDifferent ? "Original" : "Truth Table"} />
-                    {isDifferent && (
-                      <TruthTable ast={simplified} title="Simplified" />
-                    )}
-                  </div>
-                )
-              } catch (e) {
-                return <p className="text-xs text-slate-500 italic">Enter a valid expression to see the truth table.</p>
-              }
-            })()}
           </section>
         </div>
 
