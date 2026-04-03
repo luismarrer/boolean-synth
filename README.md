@@ -75,6 +75,10 @@ The core logic is divided into:
 - `layout.ts`: Computes node positions and edge connections for the logic gates.
 - `generator.ts`: Reconstructs algebraic expressions from the graph state.
 
+## 💡 About the Project
+
+This project is inspired by my first Computer Science class in college and is currently serving as a test of the capabilities of the Google Antigravity editor.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

@@ -1,0 +1,26 @@
+# Action Roadmap
+
+- [ ] **Redesign**
+- [ ] **Undo simplification with CTRL + Z**
+- [ ] **Interactive Inputs Mode**
+   - Toggle variables between 0 and 1.
+   - Real-time circuit response.
+- [ ] **Student Mode**
+   - Small change, massive impact: show steps and explain why.
+   - *Example*: `(a + b')' → a'b`
+   - 👉 Potential for AI integration later.
+- [ ] **Save / Share**
+   - Unique link
+   - Export JSON
+   - Copy expression
+- [ ] **Responsive Design**
+- [ ] **Landing Page + SEO**
+- [ ] **Add more gates**
+- [ ] **Add more operators**
+- [ ] **Add tests**
+   - Tests de equivalencia lógica
+   - Tests de simplificación
+   - Round-trip tests
+   - Fuzz testing
+   - Performance tests
+   - Integration tests
