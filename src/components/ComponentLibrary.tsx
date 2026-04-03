@@ -11,13 +11,13 @@ import {
 import { Type } from 'lucide-react'
 
 const components = [
-    { type: 'AND', icon: AndGate, color: '#3b82f6', label: 'AND' },
-    { type: 'OR', icon: OrGate, color: '#10b981', label: 'OR' },
-    { type: 'NOT', icon: NotGate, color: '#ef4444', label: 'NOT' },
-    { type: 'XOR', icon: XorGate, color: '#f59e0b', label: 'XOR' },
-    { type: 'NAND', icon: NandGate, color: '#06b6d4', label: 'NAND' },
-    { type: 'NOR', icon: NorGate, color: '#ec4899', label: 'NOR' },
-    { type: 'XNOR', icon: XnorGate, color: '#8b5cf6', label: 'XNOR' },
+    { type: 'AND', icon: AndGate, color: '#22D3EE', label: 'AND' },
+    { type: 'OR', icon: OrGate, color: '#22D3EE', label: 'OR' },
+    { type: 'NOT', icon: NotGate, color: '#22D3EE', label: 'NOT' },
+    { type: 'NAND', icon: NandGate, color: '#22D3EE', label: 'NAND' },
+    { type: 'NOR', icon: NorGate, color: '#22D3EE', label: 'NOR' },
+    { type: 'XOR', icon: XorGate, color: '#22D3EE', label: 'XOR' },
+    { type: 'XNOR', icon: XnorGate, color: '#22D3EE', label: 'XNOR' },
 ]
 
 export const ComponentLibrary = () => {
@@ -35,7 +35,7 @@ export const ComponentLibrary = () => {
                 {components.map((comp) => (
                     <div
                         key={comp.type}
-                        className="flex flex-col items-center gap-2 p-3 bg-slate-900/50 border border-slate-800 rounded-xl cursor-grab hover:border-slate-600 transition-all active:scale-95 group"
+                        className="flex flex-col items-center gap-2 p-3 bg-transparent border border-primary/30 rounded-xl cursor-grab hover:border-primary hover:shadow-(--glow-primary) transition-all active:scale-95 group"
                         draggable
                         onDragStart={(e) => onDragStart(e, 'gateNode', { label: comp.type, color: comp.color })}
                     >
@@ -45,16 +45,13 @@ export const ComponentLibrary = () => {
                 ))}
             </div>
 
-            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-6 mb-4">
-                Inputs
-            </h3>
             <div
-                className="flex items-center gap-3 p-3 bg-slate-900/50 border border-slate-800 rounded-xl cursor-grab hover:border-slate-600 transition-all active:scale-95 group"
+                className="mt-4 flex flex-col items-center justify-center p-3 bg-transparent border border-(--border-color) rounded-xl cursor-grab hover:border-slate-500 transition-all active:scale-95 group"
                 draggable
                 onDragStart={(e) => onDragStart(e, 'inputNode', { label: 'A' })}
             >
-                <div className="p-2 bg-blue-500/10 rounded-lg">
-                    <Type size={20} className="text-blue-400" />
+                <div className="p-2 border border-slate-600 rounded-full mb-1">
+                    <Type size={16} className="text-slate-400" />
                 </div>
                 <span className="text-xs font-medium text-slate-300">Variable</span>
             </div>

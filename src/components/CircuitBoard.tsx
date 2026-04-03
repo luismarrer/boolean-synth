@@ -1,6 +1,5 @@
 import { useCallback, useRef } from 'react'
 import ReactFlow, {
-    Background,
     Controls,
     MiniMap,
     applyEdgeChanges,
@@ -189,7 +188,12 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
     return (
         <div
             ref={reactFlowWrapper}
-            className="w-full h-full bg-[#0f172a] rounded-xl overflow-hidden border border-slate-800 shadow-2xl"
+            className="w-full h-full relative rounded-xl overflow-hidden border border-(--border-color) shadow-2xl"
+            style={{ 
+                backgroundColor: 'var(--color-bg-main)',
+                backgroundImage: `linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px)`,
+                backgroundSize: '20px 20px'
+            }}
         >
             <ReactFlow
                 nodes={nodesWithCallbacks}
@@ -203,7 +207,7 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
                 edgeTypes={edgeTypes}
                 fitView
             >
-                <Background color="#1e293b" gap={20} />
+                {/* <Background color="rgba(255,255,255,0.05)" gap={20} /> */}
                 <Controls />
                 <MiniMap
                     nodeColor={(n) => {
@@ -211,8 +215,8 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
                         if (n.type === 'outputNode') return '#10b981'
                         return '#334155'
                     }}
-                    maskColor="rgba(15, 23, 42, 0.7)"
-                    className="bg-slate-900 border-slate-800"
+                    maskColor="rgba(11, 18, 32, 0.7)"
+                    className="bg-bg-panel border-(--border-color)"
                 />
             </ReactFlow>
         </div>

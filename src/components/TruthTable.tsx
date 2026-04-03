@@ -24,32 +24,32 @@ export const TruthTable: React.FC<TruthTableProps> = ({ ast, title }) => {
                     {title}
                 </h3>
             )}
-            <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/30 backdrop-blur-sm">
-                <table className="w-full text-left border-collapse">
+            <div className="overflow-hidden rounded-xl border border-(--border-color) bg-elevated">
+                <table className="w-full text-center border-collapse">
                     <thead>
-                        <tr className="bg-slate-800/50">
+                        <tr className="border-b border-(--border-color)">
                             {variables.map(v => (
-                                <th key={v} className="px-3 py-2 text-xs font-bold text-slate-400 border-r border-slate-700/50 last:border-r-0 uppercase">
+                                <th key={v} className="px-2 py-2 text-xs font-bold text-slate-300 border-r border-(--border-color) last:border-r-0 uppercase">
                                     {v}
                                 </th>
                             ))}
-                            <th className="px-3 py-2 text-xs font-bold text-blue-400 uppercase text-center">
-                                Out
+                            <th className="px-2 py-2 text-xs font-bold text-slate-300 uppercase">
+                                OUT
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {rows.map((row, i) => (
-                            <tr key={i} className="border-t border-slate-800/50 hover:bg-white/5 transition-colors">
+                            <tr key={i} className="border-b border-(--border-color) hover:bg-white/5 transition-colors last:border-b-0">
                                 {variables.map(v => (
-                                    <td key={v} className="px-3 py-1.5 font-mono text-sm border-r border-slate-800/50 last:border-r-0">
-                                        <span className={row.values[v] ? 'text-emerald-400' : 'text-slate-600'}>
+                                    <td key={v} className="px-2 py-1.5 font-mono text-xs border-r border-(--border-color) last:border-r-0">
+                                        <span className={`inline-block w-5 h-5 leading-5 text-center rounded-sm ${row.values[v] ? 'bg-success/20 text-success' : 'bg-error/20 text-error'}`}>
                                             {row.values[v] ? '1' : '0'}
                                         </span>
                                     </td>
                                 ))}
-                                <td className="px-3 py-1.5 font-mono text-sm text-center">
-                                    <span className={`px-2 py-0.5 rounded ${row.result ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
+                                <td className="px-2 py-1.5 font-mono text-xs text-center">
+                                    <span className={`inline-block w-5 h-5 leading-5 text-center rounded-sm ${row.result ? 'bg-success/20 text-success' : 'bg-error/20 text-error'}`}>
                                         {row.result ? '1' : '0'}
                                     </span>
                                 </td>

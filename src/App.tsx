@@ -4,13 +4,11 @@ import { astToGraph } from './logic/layout'
 import { graphToAST, buildNodeAST } from './logic/generator'
 import { stringifyAST } from './logic/ast'
 import { CircuitBoard } from './components/CircuitBoard'
-import { ComponentLibrary } from './components/ComponentLibrary'
+import { LeftSidebar } from './components/LeftSidebar'
 import type { Node as RFNode, Edge as RFEdge } from 'reactflow'
-import { Cpu, RotateCcw, Share2, Info } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Cpu, Share2 } from 'lucide-react'
 
 import { simplifyAST } from './logic/simplifier'
-import { TruthTable } from './components/TruthTable'
 
 function App() {
   const [expression, setExpression] = useState("(ab)(a'b+ab')+(ab)'(a'b+ab')'")
@@ -117,161 +115,47 @@ function App() {
     }
   }, [useExpandedNotation])
 
-  const handleReset = () => {
-    setExpression("a+b")
-  }
-
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 selection:bg-blue-500/30">
-      {/* Background decoration */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-600/10 blur-[120px] rounded-full" />
-      </div>
-
-      <header className="relative z-10 border-b border-slate-800 bg-slate-950/50 backdrop-blur-md px-8 py-4 flex items-center justify-between">
+    <div className="h-screen bg-bg-main text-text-primary flex flex-col font-sans overflow-hidden selection:bg-primary/30">
+      <header className="relative z-10 border-b border-(--border-color) bg-panel px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-600/20">
-            <Cpu size={24} className="text-white" />
+          <div className="text-primary">
+            <Cpu size={28} />
           </div>
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+          <h1 className="text-xl font-bold tracking-wide text-white">
             Boolean Synth
           </h1>
         </div>
 
-        <div className="flex items-center gap-4">
-          <button
-            onClick={handleReset}
-            className="p-2 hover:bg-slate-800 rounded-full transition-colors text-slate-400"
-            title="Reset"
-          >
-            <RotateCcw size={20} />
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-medium transition-all shadow-lg shadow-blue-600/20">
-            <Share2 size={18} />
-            <span>Export</span>
-          </button>
+        <div className="flex items-center gap-3">
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" className="sr-only peer" defaultChecked />
+            <div className="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            <span className="ml-3 text-sm font-semibold text-slate-300">Simulate</span>
+          </label>
         </div>
+
+        <button className="flex items-center gap-2 px-6 py-2 btn-primary font-semibold text-sm">
+          <Share2 size={16} />
+          Export
+        </button>
       </header>
 
-      <main className="relative z-10 p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 h-[calc(100vh-80px)]">
-        {/* Sidebar */}
-        <div className="space-y-6 flex flex-col">
-          <section className="glass p-6 rounded-2xl">
-            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Info size={16} />
-              Boolean Expression
-            </h2>
-            <div className="flex items-center gap-2 mb-4">
-              <label className="text-xs text-slate-500 font-medium flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={useExpandedNotation}
-                  onChange={(e) => setUseExpandedNotation(e.target.checked)}
-                  className="rounded border-slate-700 bg-slate-800 text-blue-600 focus:ring-blue-500/50"
-                />
-                Expanded Notation (e.g. ab + a'b')
-              </label>
-            </div>
-            <div className="relative">
-              <textarea
-                value={expression}
-                onChange={(e) => setExpression(e.target.value)}
-                className="w-full h-32 bg-slate-900/50 border border-slate-800 rounded-xl p-4 font-mono text-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
-                placeholder="e.g. (a+b)c'"
-              />
-              <button
-                onClick={handleSimplify}
-                className="absolute bottom-3 right-3 px-3 py-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 text-xs font-semibold rounded-md border border-blue-500/30 transition-all"
-                title="Simplify Expression"
-              >
-                Simplify
-              </button>
-            </div>
-            <AnimatePresence>
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm"
-                >
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </section>
+      <main className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar */}
+        <LeftSidebar
+          expression={expression}
+          setExpression={setExpression}
+          useExpandedNotation={useExpandedNotation}
+          setUseExpandedNotation={setUseExpandedNotation}
+          handleSimplify={handleSimplify}
+          error={error}
+        />
 
-          <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
-            <ComponentLibrary />
-          </section>
-
-          <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
-            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-              <Cpu size={16} />
-              Truth Tables
-            </h2>
-
-            {(() => {
-              try {
-                const ast = parseExpression(expression)
-                const simplified = simplifyAST(ast)
-                const originalStr = stringifyAST(ast)
-                const simplifiedStr = stringifyAST(simplified)
-                const isDifferent = originalStr !== simplifiedStr
-
-                return (
-                  <div className="space-y-6">
-                    <TruthTable ast={ast} title={isDifferent ? "Original" : "Truth Table"} />
-                    {isDifferent && (
-                      <TruthTable ast={simplified} title="Simplified" />
-                    )}
-                  </div>
-                )
-              } catch (e) {
-                return <p className="text-xs text-slate-500 italic">Enter a valid expression to see the truth table.</p>
-              }
-            })()}
-          </section>
-
-          <section className="glass p-6 rounded-2xl flex-1 overflow-auto">
-            <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
-              Cheat Sheet
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
-                <span className="text-slate-500">AND</span>
-                <code className="bg-slate-800 px-2 py-1 rounded text-blue-400">ab</code>
-              </div>
-              <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
-                <span className="text-slate-500">OR</span>
-                <code className="bg-slate-800 px-2 py-1 rounded text-emerald-400">a+b</code>
-              </div>
-              <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
-                <span className="text-slate-500">NOT</span>
-                <code className="bg-slate-800 px-2 py-1 rounded text-red-400">a'</code>
-              </div>
-              <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
-                <span className="text-slate-500">XOR</span>
-                <code className="bg-slate-800 px-2 py-1 rounded text-amber-400">a^b</code>
-              </div>
-              <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
-                <span className="text-slate-500">NAND</span>
-                <code className="bg-slate-800 px-2 py-1 rounded text-cyan-400">(ab)'</code>
-              </div>
-              <div className="flex justify-between items-center text-sm p-2 hover:bg-white/5 rounded-lg">
-                <span className="text-slate-500">NOR</span>
-                <code className="bg-slate-800 px-2 py-1 rounded text-pink-400">(a+b)'</code>
-              </div>
-            </div>
-            <p className="mt-8 text-xs text-slate-500 italic">
-              * Support for multiple variables, parentheses, and implicit multiplication.
-            </p>
-          </section>
-        </div>
-
-        {/* Board */}
-        <div className="lg:col-span-2 h-full">
+        {/* Central Board Area */}
+        <div className="flex-1 w-full relative">
+          {/* Subtle overlay shadow from sidebar */}
+          <div className="absolute left-0 top-0 bottom-0 w-4 bg-linear-to-r from-black/20 to-transparent pointer-events-none z-10" />
           <CircuitBoard
             nodes={nodes}
             edges={edges}

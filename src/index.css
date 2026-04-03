@@ -1,27 +1,73 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3b82f6;
-  --color-secondary: #10b981;
-  --color-accent: #f59e0b;
-  --color-background: #0f172a;
-  --color-glass: rgba(255, 255, 255, 0.05);
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-bg-main: var(--color-bg-main);
+  --color-bg-panel: var(--color-bg-panel);
+  --color-bg-elevated: var(--color-bg-elevated);
+  --color-bg-grid: var(--color-bg-grid);
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --color-accent: var(--color-accent);
 }
 
 :root {
   color-scheme: dark;
+  --color-primary: #22D3EE;
+  --color-primary-hover: #06B6D4;
+  --color-bg-main: #0B1220;
+  --color-bg-panel: #111827;
+  --color-bg-elevated: #1F2937;
+  --color-bg-grid: #0F172A;
+  --color-text-primary: #E5E7EB;
+  --color-text-secondary: #9CA3AF;
+  --color-text-muted: #6B7280;
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-accent: #8B5CF6;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  
+  --border-color: rgba(255, 255, 255, 0.08);
+  --glow-primary: 0 0 10px rgba(34, 211, 238, 0.5);
 }
 
 body {
   margin: 0;
-  background-color: #0f172a;
-  color: #f8fafc;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+.bg-panel {
+  background-color: var(--color-bg-panel);
+}
+
+.bg-elevated {
+  background-color: var(--color-bg-elevated);
+}
+
 .glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-panel);
+  border: 1px solid var(--border-color);
+}
+
+.input-glow:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: var(--glow-primary);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #001018;
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--glow-primary);
 }
