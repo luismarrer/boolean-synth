@@ -5,7 +5,8 @@
 
 Boolean Synth is a high-performance, interactive tool for designing, simplifying, and visualizing Boolean logic circuits. It bridges the gap between algebraic expressions and physical logic gate diagrams with real-time bidirectional synchronization.
 
-![Boolean Synth UI](https://raw.githubusercontent.com/your-username/boolean-synth/main/public/preview.png)
+<!-- ![Boolean Synth UI](https://raw.githubusercontent.com/your-username/boolean-synth/main/public/preview.png)  -->
+<!-- TODO: Add screenshot of the app -->
 
 ## ✨ Features
 
