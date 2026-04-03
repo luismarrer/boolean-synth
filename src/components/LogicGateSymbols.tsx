@@ -10,7 +10,8 @@ export const AndGate = ({ color = 'currentColor', size = 48, className = '' }: S
     <svg width={size} height={size / 2} viewBox="0 0 40 20" className={className}>
         <path
             d="M 5 0 L 20 0 A 10 10 0 0 1 20 20 L 5 20 Z"
-            fill="none"
+            fill="currentColor"
+            fillOpacity="0.15"
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
@@ -23,7 +24,8 @@ export const OrGate = ({ color = 'currentColor', size = 48, className = '' }: Sy
     <svg width={size} height={size / 2} viewBox="0 0 40 20" className={className}>
         <path
             d="M 5 0 C 12 0 18 3 25 10 C 18 17 12 20 5 20 C 10 15 10 5 5 0 Z"
-            fill="none"
+            fill="currentColor"
+            fillOpacity="0.15"
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
@@ -36,7 +38,8 @@ export const NotGate = ({ color = 'currentColor', size = 48, className = '' }: S
     <svg width={size} height={size / 2} viewBox="0 0 40 20" className={className}>
         <path
             d="M 10 2 L 25 10 L 10 18 Z"
-            fill="none"
+            fill="currentColor"
+            fillOpacity="0.15"
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
@@ -64,7 +67,8 @@ export const XorGate = ({ color = 'currentColor', size = 48, className = '' }: S
         />
         <path
             d="M 6 0 C 13 0 19 3 26 10 C 19 17 13 20 6 20 C 11 15 11 5 6 0 Z"
-            fill="none"
+            fill="currentColor"
+            fillOpacity="0.15"
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
@@ -77,7 +81,8 @@ export const NandGate = ({ color = 'currentColor', size = 48, className = '' }: 
     <svg width={size} height={size / 2} viewBox="0 0 40 20" className={className}>
         <path
             d="M 5 0 L 20 0 A 10 10 0 0 1 20 20 L 5 20 Z"
-            fill="none"
+            fill="currentColor"
+            fillOpacity="0.15"
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
@@ -98,7 +103,8 @@ export const NorGate = ({ color = 'currentColor', size = 48, className = '' }: S
     <svg width={size} height={size / 2} viewBox="0 0 40 20" className={className}>
         <path
             d="M 5 0 C 12 0 18 3 25 10 C 18 17 12 20 5 20 C 10 15 10 5 5 0 Z"
-            fill="none"
+            fill="currentColor"
+            fillOpacity="0.15"
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"
@@ -126,7 +132,8 @@ export const XnorGate = ({ color = 'currentColor', size = 48, className = '' }: 
         />
         <path
             d="M 6 0 C 13 0 19 3 26 10 C 19 17 13 20 6 20 C 11 15 11 5 6 0 Z"
-            fill="none"
+            fill="currentColor"
+            fillOpacity="0.15"
             stroke={color}
             strokeWidth="1.5"
             strokeLinecap="round"

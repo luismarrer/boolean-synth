@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react'
+import { ChevronDown, ChevronRight } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface CollapsibleSectionProps {
-  title: string;
-  icon?: React.ReactNode;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
+  title: string
+  icon?: React.ReactNode
+  children: React.ReactNode
+  defaultOpen?: boolean
 }
 
 export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, icon, children, defaultOpen = true }) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isOpen, setIsOpen] = useState(defaultOpen)
 
   return (
-    <div className="border border-slate-800/60 rounded-xl bg-panel overflow-hidden">
+    <div className="border border-slate-800/60 rounded-xl bg-panel overflow-hidden shrink-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-3 hover:bg-white/5 transition-colors"
@@ -40,5 +40,5 @@ export const CollapsibleSection: React.FC<CollapsibleSectionProps> = ({ title, i
         )}
       </AnimatePresence>
     </div>
-  );
-};
+  )
+}

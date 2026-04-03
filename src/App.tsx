@@ -141,7 +141,7 @@ function App() {
         </button>
       </header>
 
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex overflow-hidden min-h-0">
         {/* Left Sidebar */}
         <LeftSidebar
           expression={expression}

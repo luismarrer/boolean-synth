@@ -16,30 +16,30 @@ export const GateNode = ({ id, data }: GateNodeProps) => {
     const Icon = data.icon
 
     return (
-        <div className="px-6 py-4 shadow-xl rounded-xl bg-slate-900/90 border border-slate-700/50 backdrop-blur-sm min-w-[120px] group transition-all hover:border-blue-500/50">
-            <div className="flex flex-col items-center gap-2">
-                <div className="p-2 rounded-lg bg-slate-800/50 group-hover:bg-blue-500/10 transition-colors">
-                    <Icon size={40} color={data.color} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
-                </div>
-                <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{data.label}</div>
-            </div>
+        <div className="relative flex flex-col items-center justify-center group min-w-[80px] min-h-[50px] transition-all">
+            <Icon size={72} color={data.color} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.3)] transition-transform group-hover:scale-105" />
+            
+            {/* Label */}
+            <div className="absolute -bottom-5 text-[10px] font-bold text-slate-500/0 group-hover:text-slate-500 uppercase tracking-widest transition-colors">{data.label}</div>
 
             {/* Handles */}
             <Handle
                 type="target"
                 position={Position.Left}
-                className="w-3 h-3 bg-primary border-2 border-slate-900"
+                className="w-3 h-3 bg-primary border-2 border-bg-panel/50 opacity-50 group-hover:opacity-100 transition-opacity"
+                style={{ left: '-6px' }}
             />
             <Handle
                 type="source"
                 position={Position.Right}
-                className="w-3 h-3 bg-secondary border-2 border-slate-900"
+                className="w-3 h-3 bg-secondary border-2 border-bg-panel/50 opacity-50 group-hover:opacity-100 transition-opacity"
+                style={{ right: '-6px' }}
             />
 
             {data.onDelete && (
                 <button
                     onClick={() => data.onDelete?.(id)}
-                    className="absolute -top-2 -right-2 bg-red-500/80 hover:bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-2 -right-2 bg-red-500/80 hover:bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                 >
                     <Trash2 size={12} />
                 </button>
