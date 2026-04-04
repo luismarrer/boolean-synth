@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { TruthTable } from './TruthTable';
 import { parseExpression } from '../logic/parser';
-import React from 'react';
 
 describe('TruthTable Component', () => {
   it('should render a truth table for AB', () => {

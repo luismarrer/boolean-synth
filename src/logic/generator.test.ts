@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildNodeAST, graphToAST } from './generator';
-import { Node, Edge } from 'reactflow';
+import type { Node, Edge } from 'reactflow';
 
 describe('generator logic', () => {
   const nodes: Node[] = [

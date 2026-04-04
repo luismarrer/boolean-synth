@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { getVariables, evaluateAST, stringifyAST, ASTNode } from './ast';
+import { getVariables, evaluateAST, stringifyAST } from './ast';
+import type { ASTNode } from './ast';
 
 describe('AST logic', () => {
   const nodeA: ASTNode = { type: 'VAR', name: 'a', children: [] };

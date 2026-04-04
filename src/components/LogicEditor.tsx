@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { parseExpression } from '../logic/parser'
 
 interface LogicEditorProps {
   expression: string
