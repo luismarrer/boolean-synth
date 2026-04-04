@@ -1,6 +1,7 @@
 # Action Roadmap
 
-- [ ] **Redesign**
+- [X] **Redesign**
+- [ ] **Responsive Design**
 - [ ] **Undo simplification with CTRL + Z**
 - [ ] **Interactive Inputs Mode**
    - Toggle variables between 0 and 1.
@@ -13,7 +14,6 @@
    - Unique link
    - Export JSON
    - Copy expression
-- [ ] **Responsive Design**
 - [ ] **Landing Page + SEO**
 - [ ] **Add more gates**
 - [ ] **Add more operators**
