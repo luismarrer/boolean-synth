@@ -109,6 +109,13 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
     const edgesWithCallbacks = edges.map(edge => ({
         ...edge,
         type: 'deletableEdge',
+        animated: false,
+        style: {
+            stroke: '#38BDF8',
+            strokeWidth: 2,
+            filter: 'drop-shadow(0 0 4px rgba(34, 211, 238, 0.4))',
+            ...edge.style,
+        },
         data: {
             ...edge.data,
             onDelete: handleDeleteEdge
@@ -138,8 +145,12 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
             const newEdges = addEdge({
                 ...connection,
                 type: 'deletableEdge',
-                animated: true,
-                style: { stroke: '#94a3b8' }
+                animated: false,
+                style: {
+                    stroke: '#38BDF8',
+                    strokeWidth: 2,
+                    filter: 'drop-shadow(0 0 4px rgba(34, 211, 238, 0.4))'
+                }
             }, edges)
             onGraphChange(nodes, newEdges, true)
         },

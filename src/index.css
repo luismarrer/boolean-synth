@@ -90,3 +90,42 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
 }
+
+/* Edge / Wire styles */
+.react-flow__edge:hover .edge-delete-btn,
+.react-flow__edge.selected .edge-delete-btn {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+.edge-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.3) !important;
+  border-color: rgba(239, 68, 68, 0.8) !important;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* ReactFlow defaults override for edges */
+.react-flow__edge-path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Connection line while drawing */
+.react-flow__connection-path {
+  stroke: #38BDF8 !important;
+  stroke-width: 2 !important;
+  stroke-dasharray: 6 4 !important;
+  filter: drop-shadow(0 0 4px rgba(34, 211, 238, 0.5));
+}
+
+/* Handle dots */
+.react-flow__handle {
+  transition: all 0.15s ease;
+}
+
+.react-flow__handle:hover,
+.react-flow__handle.connectingfrom,
+.react-flow__handle.connectingto,
+.react-flow__handle.valid {
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.3), 0 0 10px rgba(34, 211, 238, 0.4) !important;
+}

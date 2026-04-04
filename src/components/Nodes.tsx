@@ -49,17 +49,33 @@ export const GateNode = ({ id, data }: GateNodeProps) => {
 }
 
 export const InputNode = ({ id, data }: { id: string, data: { label: string, onDelete?: (id: string) => void, onLabelChange?: (id: string, label: string) => void } }) => (
-    <div className="px-4 py-2 shadow-lg rounded-full bg-[#3b82f6] border-2 border-[#1d4ed8] min-w-[100px] group relative">
+    <div
+        className="group relative flex items-center justify-center"
+        style={{
+            width: 52,
+            height: 52,
+            background: 'rgba(10, 25, 47, 0.85)',
+            border: '2px solid #00e5ff',
+            borderRadius: 4,
+        }}
+    >
         <input
             type="text"
             value={data.label}
             onChange={(e) => data.onLabelChange?.(id, e.target.value.toLowerCase())}
-            className="bg-transparent text-center font-bold text-white lowercase text-sm w-full focus:outline-none"
+            className="bg-transparent text-center font-bold lowercase focus:outline-none w-full"
+            style={{
+                color: '#00e5ff',
+                fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                fontSize: 15,
+                letterSpacing: '0.04em',
+            }}
         />
         <Handle
             type="source"
             position={Position.Right}
-            className="w-3 h-3 bg-white border-2 border-blue-700"
+            className="!w-3 !h-3 !bg-[#00e5ff] !border-2 !border-[#0a192f] !rounded-full"
+            style={{ right: -7 }}
         />
         {data.onDelete && (
             <button
@@ -73,12 +89,32 @@ export const InputNode = ({ id, data }: { id: string, data: { label: string, onD
 )
 
 export const OutputNode = ({ id, data }: { id: string, data: { label: string, onDelete?: (id: string) => void } }) => (
-    <div className="px-4 py-2 shadow-lg rounded-full bg-[#10b981] border-2 border-[#047857] min-w-[80px] group relative">
-        <div className="text-center font-bold text-white lowercase text-sm">{data.label}</div>
+    <div
+        className="group relative flex items-center justify-center"
+        style={{
+            width: 52,
+            height: 52,
+            background: 'rgba(10, 25, 47, 0.85)',
+            border: '2px solid #00e5ff',
+            borderRadius: 4,
+        }}
+    >
+        <div
+            className="text-center font-bold lowercase select-none"
+            style={{
+                color: '#00e5ff',
+                fontFamily: "'JetBrains Mono', 'Fira Mono', monospace",
+                fontSize: 13,
+                letterSpacing: '0.04em',
+            }}
+        >
+            {data.label}
+        </div>
         <Handle
             type="target"
             position={Position.Left}
-            className="w-3 h-3 bg-white border-2 border-emerald-700"
+            className="!w-3 !h-3 !bg-[#00e5ff] !border-2 !border-[#0a192f] !rounded-full"
+            style={{ left: -7 }}
         />
         {data.onDelete && (
             <button
