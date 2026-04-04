@@ -31,7 +31,7 @@ const lex = (input: string): Token[] => {
     } else if (char === ')') {
       tokens.push({ type: 'RPAREN', value: ')' });
       i++;
-    } else if (/[a-zA-Z]/.test(char)) {
+    } else if (/[a-zA-Z0-9]/.test(char)) {
       let word = char;
       i++;
       while (i < input.length && /[a-zA-Z0-9]/.test(input[i])) {
