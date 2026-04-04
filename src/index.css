@@ -129,3 +129,37 @@ body {
 .react-flow__handle.valid {
   box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.3), 0 0 10px rgba(34, 211, 238, 0.4) !important;
 }
+/* Mobile specific styles */
+.mobile-nav-active {
+  background-color: rgba(34, 211, 238, 0.1);
+  color: var(--color-primary);
+  border-top: 2px solid var(--color-primary);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Ensure ReactFlow takes full height in mobile main */
+.react-flow__pane {
+  cursor: crosshair;
+}
+
+/* Hide scrollbars but allow scrolling on specific elements */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

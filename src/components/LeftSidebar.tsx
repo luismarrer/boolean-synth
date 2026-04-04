@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { CollapsibleSection } from './CollapsibleSection'
@@ -6,6 +6,7 @@ import { ComponentLibrary } from './ComponentLibrary'
 import { CheatSheet } from './CheatSheet'
 import { TruthTable } from './TruthTable'
 import { parseExpression } from '../logic/parser'
+import { LogicEditor } from './LogicEditor'
 
 interface LeftSidebarProps {
   expression: string
@@ -67,45 +68,17 @@ export function LeftSidebar({
           style={{ width: width, minWidth: width }}
         >
           <CollapsibleSection title="Logic Editor" defaultOpen={true}>
-        <div className="mt-3 input-glow bg-elevated border border-(--border-color) rounded-xl overflow-hidden relative transition-all">
-          <textarea
-            value={expression}
-            onChange={(e) => setExpression(e.target.value)}
-            className="w-full h-24 bg-transparent p-3 font-mono text-sm focus:outline-none resize-none text-slate-200 placeholder:text-slate-600"
-            placeholder="e.g. a + b'"
-          />
-        </div>
-        <div className="flex justify-between items-center mt-3">
-          <label className="text-[10px] text-slate-500 font-medium flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={useExpandedNotation}
-              onChange={(e) => setUseExpandedNotation(e.target.checked)}
-              className="rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary/50"
-            />
-            Expanded
-          </label>
-          <button
-            onClick={handleSimplify}
-            className="px-4 py-1.5 bg-primary/20 text-primary hover:bg-primary/30 border border-primary/30 rounded text-xs font-semibold transition-colors"
-            title="Simplify Expression"
-          >
-            Simplify
-          </button>
-        </div>
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="mt-3 p-3 bg-error/10 border border-error/20 rounded-lg text-error text-xs"
-            >
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </CollapsibleSection>
+            <div className="mt-2">
+              <LogicEditor
+                expression={expression}
+                setExpression={setExpression}
+                useExpandedNotation={useExpandedNotation}
+                setUseExpandedNotation={setUseExpandedNotation}
+                handleSimplify={handleSimplify}
+                error={error}
+              />
+            </div>
+          </CollapsibleSection>
 
       <CollapsibleSection title="Components" defaultOpen={true}>
         <div className="mt-2 text-slate-400">

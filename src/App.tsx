@@ -5,6 +5,7 @@ import { graphToAST, buildNodeAST } from './logic/generator'
 import { stringifyAST } from './logic/ast'
 import { CircuitBoard } from './components/CircuitBoard'
 import { LeftSidebar } from './components/LeftSidebar'
+import { MobileLayout } from './components/MobileLayout'
 import type { Node as RFNode, Edge as RFEdge } from 'reactflow'
 import { Cpu, Share2 } from 'lucide-react'
 
@@ -16,7 +17,16 @@ function App() {
   const [edges, setEdges] = useState<RFEdge[]>([])
   const [error, setError] = useState<string | null>(null)
   const [useExpandedNotation, setUseExpandedNotation] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   const isSyncingRef = useRef(false)
+
+  // Responsive check
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024) // Using 1024 as breakpoint for sidebar
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const handleSimplify = () => {
     try {
@@ -114,6 +124,22 @@ function App() {
       // Ignore if graph is in invalid state
     }
   }, [useExpandedNotation])
+
+  if (isMobile) {
+    return (
+      <MobileLayout
+        expression={expression}
+        setExpression={setExpression}
+        useExpandedNotation={useExpandedNotation}
+        setUseExpandedNotation={setUseExpandedNotation}
+        handleSimplify={handleSimplify}
+        error={error}
+        nodes={nodes}
+        edges={edges}
+        onGraphChange={handleGraphChange}
+      />
+    )
+  }
 
   return (
     <div className="h-screen bg-bg-main text-text-primary flex flex-col font-sans overflow-hidden selection:bg-primary/30">

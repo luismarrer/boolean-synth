@@ -1,7 +1,7 @@
 # Action Roadmap
 
 - [X] **Redesign**
-- [ ] **Responsive Design**
+- [X] **Responsive Design**
 - [ ] **Undo simplification with CTRL + Z**
 - [ ] **Interactive Inputs Mode**
    - Toggle variables between 0 and 1.
@@ -17,7 +17,7 @@
 - [ ] **Landing Page + SEO**
 - [ ] **Add more gates**
 - [ ] **Add more operators**
-- [ ] **Add tests**
+- [X] **Add tests**
    - Tests de equivalencia lógica
    - Tests de simplificación
    - Round-trip tests
