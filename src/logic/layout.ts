@@ -10,10 +10,6 @@ import {
   XnorGate
 } from '../components/LogicGateSymbols';
 
-const NODE_HEIGHT = 80;
-
-const HORIZONTAL_SPACING = 200;
-const VERTICAL_SPACING = 100;
 
 const preprocessASTForDiagram = (node: ASTNode): ASTNode => {
   // Recursively process children first
