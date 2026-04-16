@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import ReactFlow, {
     Controls,
     MiniMap,
@@ -6,7 +6,8 @@ import ReactFlow, {
     applyNodeChanges,
     addEdge,
     ReactFlowProvider,
-    useReactFlow
+    useReactFlow,
+    useNodesInitialized
 } from 'reactflow'
 import type {
     OnNodesChange,
@@ -73,7 +74,40 @@ interface CircuitBoardProps {
 
 const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) => {
     const reactFlowWrapper = useRef<HTMLDivElement>(null)
-    const { project } = useReactFlow()
+    const { project, fitView } = useReactFlow()
+    const nodesInitialized = useNodesInitialized({ includeHiddenNodes: false })
+
+    // Stable refs so our effect always reads the latest values without
+    // needing them in the dependency array (which would cause re-runs on every render)
+    const nodesRef = useRef(nodes)
+    const edgesRef = useRef(edges)
+    const hasInitializedRef = useRef(false)
+    // Keep refs in sync on every render (runs before effects)
+    useEffect(() => {
+        nodesRef.current = nodes
+        edgesRef.current = edges
+    })
+
+    // When React Flow finishes measuring all node handles:
+    // 1. Fit the viewport so the circuit is fully visible
+    // 2. Re-push edges through onGraphChange so the parent returns *new object refs*,
+    //    which React Flow's controlled-mode sync detects as changed and re-routes the
+    //    edge paths using the now-known handle positions.
+    useEffect(() => {
+        if (!nodesInitialized) {
+            // Nodes changed (new expression typed) — allow re-init on next measurement
+            hasInitializedRef.current = false
+            return
+        }
+        if (hasInitializedRef.current) return
+        hasInitializedRef.current = true
+
+        fitView({ padding: 0.2, duration: 200 })
+
+        if (edgesRef.current.length > 0) {
+            onGraphChange(nodesRef.current, edgesRef.current, false)
+        }
+    }, [nodesInitialized, fitView, onGraphChange])
 
     const handleDelete = useCallback((id: string) => {
         const newNodes = nodes.filter(n => n.id !== id)
@@ -200,7 +234,7 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
         <div
             ref={reactFlowWrapper}
             className="w-full h-full relative rounded-xl overflow-hidden border border-(--border-color) shadow-2xl"
-            style={{ 
+            style={{
                 backgroundColor: 'var(--color-bg-main)',
                 backgroundImage: `linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px)`,
                 backgroundSize: '20px 20px'
@@ -216,7 +250,6 @@ const CircuitBoardInner = ({ nodes, edges, onGraphChange }: CircuitBoardProps) =
                 onDrop={onDrop}
                 nodeTypes={nodeTypes}
                 edgeTypes={edgeTypes}
-                fitView
             >
                 {/* <Background color="rgba(255,255,255,0.05)" gap={20} /> */}
                 <Controls />

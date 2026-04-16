@@ -18,18 +18,20 @@ export const GateNode = ({ id, data }: GateNodeProps) => {
     return (
         <div className="relative flex flex-col items-center justify-center group min-w-[80px] min-h-[50px] transition-all">
             <Icon size={72} color={data.color} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.3)] transition-transform group-hover:scale-105" />
-            
+
             {/* Label */}
             <div className="absolute -bottom-5 text-[10px] font-bold text-slate-500/0 group-hover:text-slate-500 uppercase tracking-widest transition-colors">{data.label}</div>
 
             {/* Handles */}
             <Handle
+                id="target"
                 type="target"
                 position={Position.Left}
                 className="w-3 h-3 bg-primary border-2 border-bg-panel/50 opacity-50 group-hover:opacity-100 transition-opacity"
                 style={{ left: '-6px' }}
             />
             <Handle
+                id="source"
                 type="source"
                 position={Position.Right}
                 className="w-3 h-3 bg-secondary border-2 border-bg-panel/50 opacity-50 group-hover:opacity-100 transition-opacity"
@@ -72,9 +74,10 @@ export const InputNode = ({ id, data }: { id: string, data: { label: string, onD
             }}
         />
         <Handle
+            id="source"
             type="source"
             position={Position.Right}
-            className="!w-3 !h-3 !bg-[#00e5ff] !border-2 !border-[#0a192f] !rounded-full"
+            className="w-3 h-3 bg-[#00e5ff] border-2 border-[#0a192f] rounded-full"
             style={{ right: -7 }}
         />
         {data.onDelete && (
@@ -111,9 +114,10 @@ export const OutputNode = ({ id, data }: { id: string, data: { label: string, on
             {data.label}
         </div>
         <Handle
+            id="target"
             type="target"
             position={Position.Left}
-            className="!w-3 !h-3 !bg-[#00e5ff] !border-2 !border-[#0a192f] !rounded-full"
+            className="w-3 h-3 bg-[#00e5ff] border-2 border-[#0a192f] rounded-full"
             style={{ left: -7 }}
         />
         {data.onDelete && (

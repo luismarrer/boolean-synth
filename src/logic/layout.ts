@@ -1,5 +1,5 @@
 import type { ASTNode } from './ast';
-import type { Node, Edge } from 'reactflow';
+import { Position, type Node, type Edge } from 'reactflow';
 import { 
   AndGate,
   OrGate,
@@ -91,11 +91,18 @@ const preprocessASTForDiagram = (node: ASTNode): ASTNode => {
   return { ...node, children: processedChildren };
 };
 
+import dagre from 'dagre';
+
 export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
   const simplifiedAST = preprocessASTForDiagram(ast);
   const nodes: Node[] = [];
   const edges: Edge[] = [];
   let idCounter = 0;
+
+  const dagreGraph = new dagre.graphlib.Graph();
+  dagreGraph.setDefaultEdgeLabel(() => ({}));
+  // A directed graph moving from left to right
+  dagreGraph.setGraph({ rankdir: 'LR', nodesep: 80, ranksep: 120 });
 
   // 1. Find all unique variables
   const variables = new Set<string>();
@@ -111,21 +118,23 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
   const varNodes = Array.from(variables).sort();
   const varMap: Record<string, string> = {};
   
-  varNodes.forEach((varName, index) => {
+  varNodes.forEach((varName) => {
     const id = `input-${varName}`;
     varMap[varName] = id;
     nodes.push({
       id,
       type: 'inputNode',
-      position: { x: 0, y: index * (NODE_HEIGHT + VERTICAL_SPACING) },
+      position: { x: 0, y: 0 },
+      sourcePosition: Position.Right,
       data: { label: varName }
     });
+    dagreGraph.setNode(id, { width: 60, height: 60 });
   });
 
-  const traverse = (node: ASTNode, x: number, y: number): { id: string; height: number } => {
+  // 3. Traverse and collect gates and edges
+  const traverse = (node: ASTNode): string => {
     if (node.type === 'VAR' && node.name) {
-      const id = varMap[node.name];
-      return { id, height: NODE_HEIGHT };
+      return varMap[node.name];
     }
 
     const currentId = `node-${idCounter++}`;
@@ -141,61 +150,68 @@ export const astToGraph = (ast: ASTNode): { nodes: Node[]; edges: Edge[] } => {
       case 'NOR': data.icon = NorGate; data.color = '#ec4899'; break;
     }
 
-    let childY = y;
-    let totalChildrenHeight = 0;
-    
-    node.children.forEach((child, index) => {
-      // Find the depth to decide X of gates
-      const childResult = traverse(child, x - HORIZONTAL_SPACING, childY);
-      edges.push({
-        id: `edge-${currentId}-${childResult.id}-${index}`,
-        source: childResult.id,
-        target: currentId,
-        animated: true,
-        style: { stroke: '#94a3b8' }
-      });
-      childY += childResult.height + VERTICAL_SPACING;
-      totalChildrenHeight += childResult.height + (index > 0 ? VERTICAL_SPACING : 0);
-    });
-
-    const finalY = y + (totalChildrenHeight / 2) - (NODE_HEIGHT / 2);
-    
     nodes.push({
       id: currentId,
       type: 'gateNode',
-      position: { x, y: finalY },
+      position: { x: 0, y: 0 },
+      targetPosition: Position.Left,
+      sourcePosition: Position.Right,
       data
     });
+    dagreGraph.setNode(currentId, { width: 80, height: 80 });
 
-    return { id: currentId, height: Math.max(NODE_HEIGHT, totalChildrenHeight) };
+    node.children.forEach((child, index) => {
+      const childId = traverse(child);
+      const edgeId = `edge-${currentId}-${childId}-${index}`;
+      edges.push({
+        id: edgeId,
+        source: childId, // flowing from inputs to gates
+        target: currentId,
+        sourceHandle: 'source',
+        targetHandle: 'target',
+        animated: true,
+        style: { stroke: '#94a3b8' }
+      });
+      dagreGraph.setEdge(childId, currentId);
+    });
+
+    return currentId;
   };
 
-  // Calculate necessary horizontal space based on AST depth
-  const getDepth = (node: ASTNode): number => {
-    if (node.type === 'VAR') return 1;
-    if (node.children.length === 0) return 1;
-    return 1 + Math.max(...node.children.map(getDepth));
-  };
-  const depth = getDepth(simplifiedAST);
-  const startX = depth * HORIZONTAL_SPACING;
-
-  const root = traverse(simplifiedAST, startX, 100);
+  const rootId = traverse(simplifiedAST);
   
   // Add Output node
   const outputId = 'output-node';
   nodes.push({
     id: outputId,
     type: 'outputNode',
-    position: { x: startX + HORIZONTAL_SPACING, y: nodes.find(n => n.id === root.id)?.position.y || 100 },
+    position: { x: 0, y: 0 },
+    targetPosition: Position.Left,
     data: { label: 'OUT' }
   });
+  dagreGraph.setNode(outputId, { width: 60, height: 60 });
   
   edges.push({
-    id: `edge-${outputId}-${root.id}`,
-    source: root.id,
+    id: `edge-${outputId}-${rootId}`,
+    source: rootId,
     target: outputId,
+    sourceHandle: 'source',
+    targetHandle: 'target',
     animated: true,
     style: { stroke: '#10b981', strokeWidth: 2 }
+  });
+  dagreGraph.setEdge(rootId, outputId);
+
+  // Apply layout
+  dagre.layout(dagreGraph);
+
+  // Apply coordinates to regular nodes
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.position = {
+      x: nodeWithPosition.x - (nodeWithPosition.width / 2),
+      y: nodeWithPosition.y - (nodeWithPosition.height / 2),
+    };
   });
 
   return { nodes, edges };

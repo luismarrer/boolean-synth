@@ -91,10 +91,11 @@ export default function DeletableEdge({
                             alignItems: 'center',
                             justifyContent: 'center',
                             color: '#EF4444',
-                            cursor: 'pointer',
-                            opacity: 0,
+                            cursor: selected ? 'pointer' : 'default',
+                            opacity: selected ? 1 : 0,
+                            pointerEvents: selected ? 'all' : 'none',
                             transition: 'all 0.2s ease',
-                            transform: 'scale(0.8)',
+                            transform: selected ? 'scale(1)' : 'scale(0.8)',
                         }}
                         className="edge-delete-btn"
                         onClick={onEdgeClick}
