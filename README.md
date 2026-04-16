@@ -1,6 +1,7 @@
 # Boolean Synth ⚡️
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=flat&logo=vercel)](https://boolean-synth.vercel.app/)
+[![Run Tests](https://github.com/luismarrer/boolean-synth/actions/workflows/test.yml/badge.svg)](https://github.com/luismarrer/boolean-synth/actions/workflows/test.yml)
 [**Live Demo →**](https://boolean-synth.vercel.app/)
 
 Boolean Synth is a high-performance, interactive tool for designing, simplifying, and visualizing Boolean logic circuits. It bridges the gap between algebraic expressions and physical logic gate diagrams with real-time bidirectional synchronization.
@@ -75,6 +76,66 @@ The core logic is divided into:
 - `simplifier.ts`: Applies Boolean algebra rules to reduce expression complexity.
 - `layout.ts`: Computes node positions and edge connections for the logic gates.
 - `generator.ts`: Reconstructs algebraic expressions from the graph state.
+
+## 🧪 Testing & CI/CD
+
+### Running Tests Locally
+
+| Command | Description |
+| :--- | :--- |
+| `pnpm test` | Watch mode — re-runs on file changes |
+| `pnpm test:run` | One-shot run — exits with code 0/1 |
+| `pnpm test:coverage` | One-shot run + coverage report |
+| `pnpm test:ui` | Open the Vitest browser UI |
+
+Tests live colocated with the source they cover (e.g. `src/logic/parser.test.ts`, `src/components/TruthTable.test.tsx`).
+
+---
+
+### ⚙️ GitHub Actions CI
+
+The workflow at `.github/workflows/test.yml` **automatically runs tests** on every push and pull request that touches:
+- `src/**` or `tests/**`
+- `package.json` or `pnpm-lock.yaml`
+- `vite.config.ts` or any `tsconfig*.json`
+
+The job is named **"Run Tests"** — this is the status check name you'll reference in branch protection.
+
+**What it does:**
+1. Checks out the code
+2. Sets up Node 20 + pnpm 10 with a warm store cache
+3. Runs `pnpm install --frozen-lockfile`
+4. Runs the full test suite (`pnpm test:run`)
+5. Generates a coverage report (`pnpm test:coverage`)
+
+**A failing test fails the entire workflow and blocks merges.**
+
+---
+
+### 🔒 Enabling Branch Protection (GitHub)
+
+To enforce that CI passes before any merge into `main`:
+
+1. Go to **Settings → Branches** in your GitHub repo
+2. Click **Add branch protection rule** for `main`
+3. Enable **"Require status checks to pass before merging"**
+4. Search for and select: **`Run Tests`**
+5. Enable **"Require branches to be up to date before merging"**
+6. Save
+
+Once set, GitHub will block any PR merge if the **Run Tests** job fails.
+
+---
+
+### 🪝 Pre-push Hook (Husky)
+
+A Husky `pre-push` hook runs `pnpm test:run` locally **before every `git push`**. If tests fail, the push is aborted automatically — no broken code reaches the remote.
+
+The hook is installed automatically when you run `pnpm install` (via the `prepare` script).
+
+> **Note for CI environments:** Husky skips itself when `CI=true` is set, so it won't interfere with GitHub Actions.
+
+---
 
 ## 💡 About the Project
 
